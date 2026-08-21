@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1] — 2026-08-21
+
+### Changed
+
+- Align error mapping and retry behaviour with the Node SDK (status-based exceptions, 8s `Retry-After` cap).
+- Fix path-segment encoding so spaces become `%20`.
+
 ## [0.1.0] — 2026-08-21
 
 ### Added
