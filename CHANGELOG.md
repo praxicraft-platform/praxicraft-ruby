@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- ci: release via tags only (no push to main) (#2)
+- ci: auto-bump releases with GitHub Release + package publish
+
 ## [0.1.1] — 2026-08-21
 
 ### Changed
