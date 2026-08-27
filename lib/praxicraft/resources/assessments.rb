@@ -35,35 +35,35 @@ module Praxicraft
         update(assessment, "status" => "active")
       end
 
-      def list_cases(assessment, params = nil)
+      def list_tasks(assessment, params = nil)
         key = Client.path_segment(assessment, "assessment")
-        @client.get("/assessments/#{key}/cases/", normalize(params))
+        @client.get("/assessments/#{key}/tasks/", normalize(params))
       end
 
-      def attach_cases(assessment, args = nil, **kwargs)
+      def attach_tasks(assessment, args = nil, **kwargs)
         body = normalize(args || kwargs)
         if body.nil? || body.empty?
-          raise APIError.new("attach_cases() requires cases or case_id", "INVALID_ARGUMENT")
+          raise APIError.new("attach_tasks() requires tasks or task_id", "INVALID_ARGUMENT")
         end
 
         key = Client.path_segment(assessment, "assessment")
-        @client.post("/assessments/#{key}/cases/attach/", body)
+        @client.post("/assessments/#{key}/tasks/attach/", body)
       end
 
-      def replace_cases(assessment, cases, extra = nil, **kwargs)
+      def replace_tasks(assessment, tasks, extra = nil, **kwargs)
         key = Client.path_segment(assessment, "assessment")
-        body = { "cases" => cases }.merge(normalize(extra || kwargs) || {})
-        @client.put("/assessments/#{key}/cases/replace/", body)
+        body = { "tasks" => tasks }.merge(normalize(extra || kwargs) || {})
+        @client.put("/assessments/#{key}/tasks/replace/", body)
       end
 
-      def remove_case(assessment, assessment_case_id)
+      def remove_task(assessment, assessment_task_id)
         key = Client.path_segment(assessment, "assessment")
-        case_id = assessment_case_id.to_s.strip
-        if case_id.empty?
-          raise APIError.new("assessment_case_id must be a non-empty string", "INVALID_ARGUMENT")
+        task_id = assessment_task_id.to_s.strip
+        if task_id.empty?
+          raise APIError.new("assessment_task_id must be a non-empty string", "INVALID_ARGUMENT")
         end
 
-        @client.delete("/assessments/#{key}/cases/remove/", { "assessment_case_id" => case_id })
+        @client.delete("/assessments/#{key}/tasks/remove/", { "assessment_task_id" => task_id })
       end
 
       private
