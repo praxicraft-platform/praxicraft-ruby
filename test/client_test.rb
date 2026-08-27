@@ -96,4 +96,40 @@ class ClientTest < Minitest::Test
   ensure
     ENV["PRAXICRAFT_API_KEY"] = old if old
   end
+
+  def test_assessment_task_paths_and_body_keys
+    calls = []
+    client = Praxicraft::Client.new(
+      api_key: "ct_test_x",
+      http_handler: lambda { |method, url, _h, body|
+        calls << [method, url, body ? JSON.parse(body) : nil]
+        case url
+        when %r{/tasks/attach/$}
+          { status: 200, headers: {}, body: JSON.generate({ "attached" => 1 }) }
+        when %r{/tasks/remove/$}
+          { status: 204, headers: {}, body: "" }
+        else
+          { status: 200, headers: {}, body: JSON.generate({ "results" => [{ "id" => "row-1" }] }) }
+        end
+      }
+    )
+
+    client.assessments.attach_tasks(
+      "demo",
+      tasks: [{ "task_id" => "task-1", "source" => "platform" }]
+    )
+    client.assessments.list_tasks("demo")
+    client.assessments.remove_task("demo", "row-1")
+
+    assert_equal "POST", calls[0][0]
+    assert_includes calls[0][1], "/assessments/demo/tasks/attach/"
+    assert_equal({ "tasks" => [{ "task_id" => "task-1", "source" => "platform" }] }, calls[0][2])
+
+    assert_equal "GET", calls[1][0]
+    assert_includes calls[1][1], "/assessments/demo/tasks/"
+
+    assert_equal "DELETE", calls[2][0]
+    assert_includes calls[2][1], "/assessments/demo/tasks/remove/"
+    assert_equal({ "assessment_task_id" => "row-1" }, calls[2][2])
+  end
 end
